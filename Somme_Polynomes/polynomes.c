@@ -81,7 +81,7 @@ void Sauvegarder(TListe *liste, const char *nomFichier){
 /* ========================================================
    👥 RÔLE 5 : CHARGEMENT BINAIRE
 ======================================================== */
-void Charger(TListe *L, char *nomFichier) {
+void Charger(TListe *liste, char *nomFichier) {
     FILE *f = fopen(nomFichier, "rb");
     TData d;
 
