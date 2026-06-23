@@ -35,7 +35,7 @@ void AjouterElement(TListe *liste, int coeff, int expo);
 void LibererListe(TListe *liste);
 
 // 👥 RÔLE 4 : Sauvegarde dans un fichier binaire
-void Sauvegarder(TListe *liste, char *nomFichier);
+void Sauvegarder(TListe *liste, const char *nomFichier);
 
 // 👥 RÔLE 5 : Chargement depuis un fichier binaire
 void Charger(TListe *liste, char *nomFichier);
