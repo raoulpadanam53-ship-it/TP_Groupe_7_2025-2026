@@ -2,157 +2,232 @@
 #include <stdlib.h>
 #include "polynomes.h"
 
-/* ========================================================
-   mon RÔLE : INITIALISATION DE LA LISTE
-======================================================== */
+/* =========================================================
+   📌 INITIALISATION DE LA LISTE
+   On met tous les pointeurs à NULL et taille à 0
+========================================================= */
 void InitialiserListe(TListe *liste) {
-    L->debut = NULL;
-    L->fin = NULL;
-    L->taille = 0;
+    liste->debut = NULL;
+    liste->fin = NULL;
+    liste->taille = 0;
 }
 
-/* ========================================================
-   👥 RÔLE 2 : AJOUT D'UN ÉLÉMENT EN FIN DE LISTE
-======================================================== */
-void AjouterElement(TListe *liste, int coeff, int expo) {
-    TElement *nouveau = NULL;
+/* =========================================================
+   📌 AJOUT D’UN MONÔME À LA FIN
+========================================================= */
+void AjouterMonome(TListe *liste, int coeff, int expo) {
 
-    if (coeff != 0) {
-        nouveau = malloc(sizeof(TElement));
-        if (nouveau != NULL) {
-            nouveau->data.coeff = coeff;
-            nouveau->data.expo = expo;
-            nouveau->suivant = NULL;
+    /* On ignore les monômes nuls */
+    if (coeff == 0) return;
 
-            if (liste->debut == NULL) {
-                liste->debut = nouveau;
-                liste->fin = nouveau;
-            } else {
-                liste->fin->suivant = nouveau;
-                liste->fin = nouveau;
-            }
-            liste->taille++;
-        }
+    /* Création d’un nouvel élément */
+    TElement *nouveau = (TElement*)malloc(sizeof(TElement));
+    if (!nouveau) return;
+
+    nouveau->monome.coeff = coeff;
+    nouveau->monome.expo = expo;
+    nouveau->suivant = NULL;
+
+    /* Cas 1 : liste vide */
+    if (liste->debut == NULL) {
+        liste->debut = nouveau;
+        liste->fin = nouveau;
     }
+    /* Cas 2 : liste non vide */
+    else {
+        liste->fin->suivant = nouveau;
+        liste->fin = nouveau;
+    }
+
+    liste->taille++;
 }
 
-/* ========================================================
-   👥 RÔLE 3 : LIBÉRATION DE LA MÉMOIRE
-======================================================== */
-void LibererListe(TListe *L) {
-    TElement *courant = L->debut;
-    TElement *tmp = NULL;
+/* =========================================================
+   📌 LIBÉRATION DE MÉMOIRE
+========================================================= */
+void LibererListe(TListe *liste) {
+
+    TElement *courant = liste->debut;
 
     while (courant != NULL) {
-        tmp = courant;
+        TElement *temp = courant;   // sauvegarde
+        courant = courant->suivant; // avance
+        free(temp);                 // suppression
+    }
+
+    liste->debut = NULL;
+    liste->fin = NULL;
+    liste->taille = 0;
+}
+
+/* =========================================================
+   📌 SAUVEGARDE BINAIRE
+   Écrit les monômes dans un fichier
+========================================================= */
+void Sauvegarder(TListe *liste, const char *nomFichier) {
+
+    FILE *fichier = fopen(nomFichier, "wb");
+    if (!fichier) return;
+
+    TElement *courant = liste->debut;
+
+    while (courant != NULL) {
+        fwrite(&courant->monome, sizeof(TMonome), 1, fichier);
         courant = courant->suivant;
-        free(tmp);
     }
 
-    L->debut = NULL;
-    L->fin = NULL;
-    L->taille = 0;
+    fclose(fichier);
 }
 
-/* ========================================================
-   👥 RÔLE 4 : SAUVEGARDE BINAIRE
-======================================================== */
-void Sauvegarder(TListe *liste, const char *nomFichier){
-    FILE *f = NULL;
+/* =========================================================
+   📌 CHARGEMENT BINAIRE
+   Reconstruit la liste depuis un fichier
+========================================================= */
+void Charger(TListe *liste, const char *nomFichier) {
 
-    if (L == NULL || nomFichier == NULL || nomFichier[0] == '\0')
-        return;
+    FILE *fichier = fopen(nomFichier, "rb");
+    if (!fichier) return;
 
-    f = fopen(nomFichier, "rb");
-    if (f == NULL)
-        return;
+    LibererListe(liste); // vider avant chargement
 
-    for (TElement *courant = liste->debut; courant != NULL; courant = courant->suivant)
-    {
-        if (fwrite(&courant->data, sizeof(TData), 1, f) != 1)
-        {
-            fclose(f);
-            return;
-        }
+    TMonome m;
+
+    while (fread(&m, sizeof(TMonome), 1, fichier)) {
+        AjouterMonome(liste, m.coeff, m.expo);
     }
 
-    fclose(f);        
-}
-/* ========================================================
-   👥 RÔLE 5 : CHARGEMENT BINAIRE
-======================================================== */
-void Charger(TListe *liste, char *nomFichier) {
-    FILE *f = fopen(nomFichier, "rb");
-    TData d;
-
-    if (f == NULL) return;
-
-    LibererListe(L);
-
-    while (fread(&d, sizeof(TData), 1, f)) {
-        AjouterElement(L, d.coeff, d.expo);
-    }
-
-    fclose(f);
+    fclose(fichier);
 }
 
-/* ========================================================
-   👥 RÔLE 6 : CALCULS MATHÉMATIQUES
-======================================================== */
-void Calculer(TListe *P1, TListe *P2, TListe *R, int signe) {
-    TElement *c1 = P1->debut;
-    TElement *c2 = P2->debut;
+/* =========================================================
+   📌 CALCUL : SOMME OU DIFFÉRENCE
+   signe = +1 → somme
+   signe = -1 → soustraction
+========================================================= */
+void Calculer(TListe *p1, TListe *p2, TListe *resultat, int signe) {
 
-    LibererListe(R);
+    LibererListe(resultat);
 
-    while (c1 != NULL && c2 != NULL) {
-        if (c1->data.expo > c2->data.expo) {
-            AjouterElement(R, c1->data.coeff, c1->data.expo);
+    TElement *c1 = p1->debut;
+    TElement *c2 = p2->debut;
+
+    /* Fusion des deux polynômes */
+    while (c1 && c2) {
+
+        if (c1->monome.expo > c2->monome.expo) {
+            AjouterMonome(resultat, c1->monome.coeff, c1->monome.expo);
             c1 = c1->suivant;
         }
-        else if (c1->data.expo < c2->data.expo) {
-            AjouterElement(R, signe * c2->data.coeff, c2->data.expo);
+        else if (c1->monome.expo < c2->monome.expo) {
+            AjouterMonome(resultat, signe * c2->monome.coeff, c2->monome.expo);
             c2 = c2->suivant;
         }
         else {
-            AjouterElement(R, c1->data.coeff + signe * c2->data.coeff, c1->data.expo);
+            AjouterMonome(resultat,
+                c1->monome.coeff + signe * c2->monome.coeff,
+                c1->monome.expo);
+
             c1 = c1->suivant;
             c2 = c2->suivant;
         }
     }
 
-    while (c1 != NULL) {
-        AjouterElement(R, c1->data.coeff, c1->data.expo);
+    /* reste de p1 */
+    while (c1) {
+        AjouterMonome(resultat, c1->monome.coeff, c1->monome.expo);
         c1 = c1->suivant;
     }
 
-    while (c2 != NULL) {
-        AjouterElement(R, signe * c2->data.coeff, c2->data.expo);
+    /* reste de p2 */
+    while (c2) {
+        AjouterMonome(resultat, signe * c2->monome.coeff, c2->monome.expo);
         c2 = c2->suivant;
     }
 }
 
-/* ========================================================
-   👥 RÔLE 7 : AFFICHAGE DU POLYNÔME
-======================================================== */
-void Afficher(TListe *L, char *nom) {
-    TElement *courant = L->debut;
+/* =========================================================
+   📌 AFFICHAGE D’UN POLYNÔME
+========================================================= */
+void Afficher(TListe *liste, const char *nom) {
 
-    printf("%s (taille = %d) : ", nom, L->taille);
+    printf("%s (taille=%d) : ", nom, liste->taille);
 
-    if (courant == NULL) {
+    if (liste->debut == NULL) {
         printf("0\n");
         return;
     }
 
-    while (courant != NULL) {
-        printf("(%dx^%d)", courant->data.coeff, courant->data.expo);
+    TElement *courant = liste->debut;
 
-        if (courant->suivant != NULL)
+    while (courant != NULL) {
+        printf("(%dx^%d)",
+               courant->monome.coeff,
+               courant->monome.expo);
+
+        if (courant->suivant)
             printf(" + ");
 
         courant = courant->suivant;
     }
 
     printf("\n");
+}
+
+/* =========================================================
+   📌 MENU PRINCIPAL
+========================================================= */
+void AfficherMenuPrincipal() {
+    printf("\n===== MENU =====\n");
+    printf("1. Saisie\n");
+    printf("2. Charger\n");
+    printf("3. Sauvegarder\n");
+    printf("4. P1 + P2\n");
+    printf("5. P1 - P2\n");
+    printf("6. Afficher\n");
+    printf("0. Quitter\n");
+    printf("Choix : ");
+}
+
+/* =========================================================
+   📌 SAISIE POLYNÔME 1
+========================================================= */
+void SaisirPolynome1(TListe *p1) {
+
+    int n, coeff, expo;
+
+    printf("Nombre de monomes P1 : ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+
+        printf("Coeff : ");
+        scanf("%d", &coeff);
+
+        printf("Expo : ");
+        scanf("%d", &expo);
+
+        AjouterMonome(p1, coeff, expo);
+    }
+}
+
+/* =========================================================
+   📌 SAISIE POLYNÔME 2
+========================================================= */
+void SaisirPolynome2(TListe *p2) {
+
+    int n, coeff, expo;
+
+    printf("Nombre de monomes P2 : ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+
+        printf("Coeff : ");
+        scanf("%d", &coeff);
+
+        printf("Expo : ");
+        scanf("%d", &expo);
+
+        AjouterMonome(p2, coeff, expo);
+    }
 }
