@@ -1,85 +1,60 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "polynomes.h"
 
 int main() {
 
-    /* =========================
-       VARIABLES PRINCIPALES
-    ========================= */
-    TListe polynome1, polynome2, resultat;
+    TListe P1, P2, R;
     int choix, continuer = 1;
 
-    /* Initialisation des listes */
-    InitialiserListe(&polynome1);
-    InitialiserListe(&polynome2);
-    InitialiserListe(&resultat);
+    InitialiserListe(&P1);
+    InitialiserListe(&P2);
+    InitialiserListe(&R);
 
-    /* =========================
-       BOUCLE PRINCIPALE
-    ========================= */
     while (continuer) {
 
         AfficherMenuPrincipal();
         scanf("%d", &choix);
 
-        /* ---- SAISIE ---- */
         if (choix == 1) {
-            LibererListe(&polynome1);
-            LibererListe(&polynome2);
+            LibererListe(&P1);
+            LibererListe(&P2);
 
-            SaisirPolynome1(&polynome1);
-            SaisirPolynome2(&polynome2);
+            SaisirPolynome1(&P1);
+            SaisirPolynome2(&P2);
         }
-
-        /* ---- CHARGEMENT ---- */
         else if (choix == 2) {
-            Charger(&polynome1, "P1.bin");
-            Charger(&polynome2, "P2.bin");
+            Charger(&P1, "P1.bin");
+            Charger(&P2, "P2.bin");
         }
-
-        /* ---- SAUVEGARDE ---- */
         else if (choix == 3) {
-            Sauvegarder(&polynome1, "P1.bin");
-            Sauvegarder(&polynome2, "P2.bin");
+            Sauvegarder(&P1, "P1.bin");
+            Sauvegarder(&P2, "P2.bin");
         }
-
-        /* ---- SOMME ---- */
         else if (choix == 4) {
-            Calculer(&polynome1, &polynome2, &resultat, 1);
-            Afficher(&resultat, "SOMME");
+            Calculer(&P1, &P2, &R, 1);
+            Afficher(&R, "SOMME");
         }
-
-        /* ---- DIFFERENCE ---- */
         else if (choix == 5) {
-            Calculer(&polynome1, &polynome2, &resultat, -1);
-            Afficher(&resultat, "DIFFERENCE");
+            Calculer(&P1, &P2, &R, -1);
+            Afficher(&R, "DIFFERENCE");
         }
-
-        /* ---- AFFICHAGE ---- */
         else if (choix == 6) {
-            Afficher(&polynome1, "P1");
-            Afficher(&polynome2, "P2");
+            Afficher(&P1, "P1");
+            Afficher(&P2, "P2");
         }
-
-        /* ---- QUITTER ---- */
         else if (choix == 0) {
             continuer = 0;
         }
 
-        /* Continuer ou non */
         if (choix != 0) {
             printf("Continuer ? (1/0) : ");
             scanf("%d", &continuer);
         }
     }
 
-    /* =========================
-       NETTOYAGE FINAL
-    ========================= */
-    LibererListe(&polynome1);
-    LibererListe(&polynome2);
-    LibererListe(&resultat);
+    LibererListe(&P1);
+    LibererListe(&P2);
+    LibererListe(&R);
 
     return 0;
 }
