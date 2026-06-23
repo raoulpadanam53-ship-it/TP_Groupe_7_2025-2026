@@ -5,21 +5,21 @@
    STRUCTURES DE DONNÉES DU PROJET
 ======================================================== */
 
-typedef struct TMonome TMonome{
+typedef struct TMonome{
     int coeff;
     int expo;
-};
+}Tmonome;
 
-typedef struct TPolynome Tpolynome{
+typedef struct TPolynome{
     Tpolynome monome;
     struct Tpolynome *suivant;
-};
+} Tpolynome;
 
-typedef struct TListe TListe {
+typedef struct TListe{
     Tpolynome *debut;
     Tpolynome *fin;
     int taille;
-};
+}Tliste;
 
 /* ========================================================
    REPARTITION DES 9 ROLES DU GROUPE
