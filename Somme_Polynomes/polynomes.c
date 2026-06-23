@@ -2,39 +2,31 @@
 #include <stdlib.h>
 #include "polynomes.h"
 
-/* =========================================================
-   📌 INITIALISATION DE LA LISTE
-   On met tous les pointeurs à NULL et taille à 0
-========================================================= */
+/* =========================
+   INITIALISATION
+========================= */
 void InitialiserListe(TListe *liste) {
     liste->debut = NULL;
     liste->fin = NULL;
     liste->taille = 0;
 }
 
-/* =========================================================
-   📌 AJOUT D’UN MONÔME À LA FIN
-========================================================= */
+/* =========================
+   AJOUT MONOME
+========================= */
 void AjouterMonome(TListe *liste, int coeff, int expo) {
-
-    /* On ignore les monômes nuls */
     if (coeff == 0) return;
 
-    /* Création d’un nouvel élément */
-    Tpolynome *nouveau = (Tpolynome*)malloc(sizeof(Tpolynome));
+    TElement *nouveau = malloc(sizeof(TElement));
     if (!nouveau) return;
 
     nouveau->monome.coeff = coeff;
     nouveau->monome.expo = expo;
     nouveau->suivant = NULL;
 
-    /* Cas 1 : liste vide */
     if (liste->debut == NULL) {
-        liste->debut = nouveau;
-        liste->fin = nouveau;
-    }
-    /* Cas 2 : liste non vide */
-    else {
+        liste->debut = liste->fin = nouveau;
+    } else {
         liste->fin->suivant = nouveau;
         liste->fin = nouveau;
     }
@@ -42,156 +34,147 @@ void AjouterMonome(TListe *liste, int coeff, int expo) {
     liste->taille++;
 }
 
-/* =========================================================
-   📌 LIBÉRATION DE MÉMOIRE
-========================================================= */
+/* =========================
+   LIBÉRATION
+========================= */
 void LibererListe(TListe *liste) {
-
     TElement *courant = liste->debut;
 
-    while (courant != NULL) {
-        Tpolynome *temp = courant;   // sauvegarde
-        courant = courant->suivant; // avance
-        free(temp);                 // suppression
+    while (courant) {
+        TElement *tmp = courant;
+        courant = courant->suivant;
+        free(tmp);
     }
 
-    liste->debut = NULL;
-    liste->fin = NULL;
+    liste->debut = liste->fin = NULL;
     liste->taille = 0;
 }
 
-/* =========================================================
-   📌 SAUVEGARDE BINAIRE
-   Écris les monômes dans un fichier
-========================================================= */
+/* =========================
+   SAUVEGARDE
+========================= */
 void Sauvegarder(TListe *liste, const char *nomFichier) {
+    FILE *f = fopen(nomFichier, "wb");
+    if (!f) return;
 
-    FILE *fichier = fopen(nomFichier, "wb");
-    if (!fichier) return;
-
-    TElement *courant = liste->debut;
-
-    while (courant != NULL) {
-        fwrite(&courant->monome, sizeof(TMonome), 1, fichier);
-        courant = courant->suivant;
+    for (TElement *c = liste->debut; c; c = c->suivant) {
+        fwrite(&c->monome, sizeof(TMonome), 1, f);
     }
 
-    fclose(fichier);
+    fclose(f);
 }
 
-/* =========================================================
-   📌 CHARGEMENT BINAIRE
-   Reconstruit la liste depuis un fichier
-========================================================= */
+/* =========================
+   CHARGEMENT
+========================= */
 void Charger(TListe *liste, const char *nomFichier) {
+    FILE *f = fopen(nomFichier, "rb");
+    if (!f) return;
 
-    FILE *fichier = fopen(nomFichier, "rb");
-    if (!fichier) return;
-
-    LibererListe(liste); // vider avant chargement
+    LibererListe(liste);
 
     TMonome m;
-
-    while (fread(&m, sizeof(TMonome), 1, fichier)) {
+    while (fread(&m, sizeof(TMonome), 1, f)) {
         AjouterMonome(liste, m.coeff, m.expo);
     }
 
-    fclose(fichier);
+    fclose(f);
 }
 
-/* =========================================================
-   📌 CALCUL : SOMME OU DIFFÉRENCE
-   signe = +1 → somme
-   signe = -1 → soustraction
-========================================================= */
+/* =========================
+   SIMPLIFICATION
+   (fusion des mêmes exposants)
+========================= */
+void Simplifier(TListe *liste) {
+
+    TElement *courant = liste->debut;
+
+    while (courant) {
+
+        TElement *prev = courant;
+        TElement *tmp = courant->suivant;
+
+        while (tmp) {
+
+            if (tmp->monome.expo == courant->monome.expo) {
+
+                courant->monome.coeff += tmp->monome.coeff;
+
+                prev->suivant = tmp->suivant;
+                free(tmp);
+
+                liste->taille--;
+
+                tmp = prev->suivant;
+            } else {
+                prev = tmp;
+                tmp = tmp->suivant;
+            }
+        }
+
+        courant = courant->suivant;
+    }
+}
+
+/* =========================
+   CALCUL SOMME / DIFF
+========================= */
 void Calculer(TListe *p1, TListe *p2, TListe *resultat, int signe) {
 
     LibererListe(resultat);
 
-    TElement *c1 = p1->debut;
-    TElement *c2 = p2->debut;
-
-    /* Fusion des deux polynômes */
-    while (c1 && c2) {
-
-        if (c1->monome.expo > c2->monome.expo) {
-            AjouterMonome(resultat, c1->monome.coeff, c1->monome.expo);
-            c1 = c1->suivant;
-        }
-        else if (c1->monome.expo < c2->monome.expo) {
-            AjouterMonome(resultat, signe * c2->monome.coeff, c2->monome.expo);
-            c2 = c2->suivant;
-        }
-        else {
-            AjouterMonome(resultat,
-                c1->monome.coeff + signe * c2->monome.coeff,
-                c1->monome.expo);
-
-            c1 = c1->suivant;
-            c2 = c2->suivant;
-        }
+    for (TElement *c = p1->debut; c; c = c->suivant) {
+        AjouterMonome(resultat, c->monome.coeff, c->monome.expo);
     }
 
-    /* reste de p1 */
-    while (c1) {
-        AjouterMonome(resultat, c1->monome.coeff, c1->monome.expo);
-        c1 = c1->suivant;
+    for (TElement *c = p2->debut; c; c = c->suivant) {
+        AjouterMonome(resultat,
+            signe * c->monome.coeff,
+            c->monome.expo);
     }
 
-    /* reste de p2 */
-    while (c2) {
-        AjouterMonome(resultat, signe * c2->monome.coeff, c2->monome.expo);
-        c2 = c2->suivant;
-    }
+    Simplifier(resultat);
 }
 
-/* =========================================================
-   📌 AFFICHAGE D’UN POLYNÔME
-========================================================= */
+/* =========================
+   AFFICHAGE
+========================= */
 void Afficher(TListe *liste, const char *nom) {
 
     printf("%s (taille=%d) : ", nom, liste->taille);
 
-    if (liste->debut == NULL) {
+    if (!liste->debut) {
         printf("0\n");
         return;
     }
 
-    TElement *courant = liste->debut;
-
-    while (courant != NULL) {
-        printf("(%dx^%d)",
-               courant->monome.coeff,
-               courant->monome.expo);
-
-        if (courant->suivant)
-            printf(" + ");
-
-        courant = courant->suivant;
+    for (TElement *c = liste->debut; c; c = c->suivant) {
+        printf("(%dx^%d)", c->monome.coeff, c->monome.expo);
+        if (c->suivant) printf(" + ");
     }
 
     printf("\n");
 }
 
-/* =========================================================
-   📌 MENU PRINCIPAL
-========================================================= */
+/* =========================
+   MENU
+========================= */
 void AfficherMenuPrincipal() {
     printf("\n===== MENU =====\n");
     printf("1. Saisie\n");
     printf("2. Charger\n");
     printf("3. Sauvegarder\n");
-    printf("4. P1 + P2\n");
-    printf("5. P1 - P2\n");
+    printf("4. Somme\n");
+    printf("5. Difference\n");
     printf("6. Afficher\n");
     printf("0. Quitter\n");
     printf("Choix : ");
 }
 
-/* =========================================================
-   📌 SAISIE POLYNÔME 1
-========================================================= */
-void SaisirPolynome1(TListe *polynome1) {
+/* =========================
+   SAISIE P1
+========================= */
+void SaisirPolynome1(TListe *p1) {
 
     int n, coeff, expo;
 
@@ -199,21 +182,19 @@ void SaisirPolynome1(TListe *polynome1) {
     scanf("%d", &n);
 
     for (int i = 0; i < n; i++) {
-
         printf("Coeff : ");
         scanf("%d", &coeff);
-
         printf("Expo : ");
         scanf("%d", &expo);
 
-        AjouterMonome(polynome1, coeff, expo);
+        AjouterMonome(p1, coeff, expo);
     }
 }
 
-/* =========================================================
-   📌 SAISIE POLYNÔME 2
-========================================================= */
-void SaisirPolynome2(TListe *polynôme) {
+/* =========================
+   SAISIE P2
+========================= */
+void SaisirPolynome2(TListe *p2) {
 
     int n, coeff, expo;
 
@@ -221,13 +202,11 @@ void SaisirPolynome2(TListe *polynôme) {
     scanf("%d", &n);
 
     for (int i = 0; i < n; i++) {
-
         printf("Coeff : ");
         scanf("%d", &coeff);
-
         printf("Expo : ");
         scanf("%d", &expo);
 
-        AjouterMonome(polynome2, coeff, expo);
+        AjouterMonome(p2, coeff, expo);
     }
 }
