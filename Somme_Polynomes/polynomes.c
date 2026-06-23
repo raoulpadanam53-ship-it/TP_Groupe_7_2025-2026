@@ -57,21 +57,23 @@ void LibererListe(TListe *L) {
 /* ========================================================
    👥 RÔLE 4 : SAUVEGARDE BINAIRE
 ======================================================== */
-void Sauvegarder(TListe *L, char *nomFichier) {
+void Sauvegarder(TListe *L, const char *nomFichier)
+{
+    if (!L || !nomFichier || !*nomFichier)
+        return;
+
     FILE *f = fopen(nomFichier, "wb");
-    TElement *courant = L->debut;
-    TData d;
+    if (!f)
+        return;
 
-    if (f == NULL) return;
-
-    while (courant != NULL) {
-        d = courant->data;
-        fwrite(&d, sizeof(TData), 1, f);
-        courant = courant->suivant;
+    for (TElement *courant = L->debut; courant != NULL; courant = courant->suivant)
+    {
+        if (fwrite(&courant->data, sizeof(TData), 1, f) != 1)
+        {
+            fclose(f);
+            return;
+        }
     }
-
-    fclose(f);
-}
 
 /* ========================================================
    👥 RÔLE 5 : CHARGEMENT BINAIRE
