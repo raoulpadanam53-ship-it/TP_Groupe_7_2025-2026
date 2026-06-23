@@ -2,16 +2,18 @@
 #include <stdlib.h>
 #include "polynomes.h"
 
-/* =========================
-   R�LE 1 : GESTION DES LISTES
-========================= */
-
+/* ========================================================
+   mon RÔLE : INITIALISATION DE LA LISTE
+======================================================== */
 void InitialiserListe(TListe *L) {
     L->debut = NULL;
     L->fin = NULL;
     L->taille = 0;
 }
 
+/* ========================================================
+   👥 RÔLE 2 : AJOUT D'UN ÉLÉMENT EN FIN DE LISTE
+======================================================== */
 void AjouterElement(TListe *L, int coeff, int expo) {
     TElement *nouveau = NULL;
 
@@ -34,6 +36,9 @@ void AjouterElement(TListe *L, int coeff, int expo) {
     }
 }
 
+/* ========================================================
+   👥 RÔLE 3 : LIBÉRATION DE LA MÉMOIRE
+======================================================== */
 void LibererListe(TListe *L) {
     TElement *courant = L->debut;
     TElement *tmp = NULL;
@@ -49,10 +54,9 @@ void LibererListe(TListe *L) {
     L->taille = 0;
 }
 
-/* =========================
-   R�LE 2 : SAUVEGARDE ET CHARGEMENT
-========================= */
-
+/* ========================================================
+   👥 RÔLE 4 : SAUVEGARDE BINAIRE
+======================================================== */
 void Sauvegarder(TListe *L, char *nomFichier) {
     FILE *f = fopen(nomFichier, "wb");
     TElement *courant = L->debut;
@@ -69,11 +73,14 @@ void Sauvegarder(TListe *L, char *nomFichier) {
     fclose(f);
 }
 
+/* ========================================================
+   👥 RÔLE 5 : CHARGEMENT BINAIRE
+======================================================== */
 void Charger(TListe *L, char *nomFichier) {
     FILE *f = fopen(nomFichier, "rb");
     TData d;
 
-    if (f == NULL) return; // S�curit� si le fichier n'existe pas encore
+    if (f == NULL) return;
 
     LibererListe(L);
 
@@ -84,10 +91,9 @@ void Charger(TListe *L, char *nomFichier) {
     fclose(f);
 }
 
-/* =========================
-   R�LE 3 : CALCULS MATH�MATIQUES
-========================= */
-
+/* ========================================================
+   👥 RÔLE 6 : CALCULS MATHÉMATIQUES
+======================================================== */
 void Calculer(TListe *P1, TListe *P2, TListe *R, int signe) {
     TElement *c1 = P1->debut;
     TElement *c2 = P2->debut;
@@ -121,10 +127,9 @@ void Calculer(TListe *P1, TListe *P2, TListe *R, int signe) {
     }
 }
 
-/* =========================
-   R�LE 4 : AFFICHAGE
-========================= */
-
+/* ========================================================
+   👥 RÔLE 7 : AFFICHAGE DU POLYNÔME
+======================================================== */
 void Afficher(TListe *L, char *nom) {
     TElement *courant = L->debut;
 
