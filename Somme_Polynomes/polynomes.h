@@ -2,51 +2,51 @@
 #define POLYNOMES_H
 
 /* ==========================================
-   1. STRUCTURES (Les plans de la bo顃e)
+   1. STRUCTURES (Les plans de la bo卯te)
    ========================================== */
 
-typedef struct TData {
+typedef struct TMonome TMonome  {
     int coeff;
     int expo;
-} TData;
+};
 
-typedef struct TElement {
-    TData data;
+typedef struct TElement TElement{
+    TMonome monome;
     struct TElement *suivant;
-} TElement;
+};
 
-typedef struct TListe {
+typedef struct  TListe TListe {
     TElement *debut;
     TElement *fin;
     int taille;
-} TListe;
+};
 
 /* ==========================================
-   2. PROTOTYPES (La liste des t鈉hes pour le groupe)
+   2. PROTOTYPES (La liste des t芒ches pour le groupe)
    ========================================== */
 
-// R鬺e 1
-void InitialiserListe(TListe *L);
+// R么le 1
+void InitialiserListe(TListe *liste);
 
-// R鬺e 2
-void LibererListe(TListe *L);
+// R么le 2
+void LibererListe(TListe *liste);
 
-// R鬺e 3
-void AjouterElement(TListe *L, int coeff, int expo);
+// R么le 3
+void AjouterElement(TListe *liste, int coeff, int expo);
 
-// R鬺e 4
-void Afficher(TListe *L, char *nom);
+// R么le 4
+void Afficher(TListe *liste, char *nom);
 
-// R鬺e 5
+// R么le 5
 void Calculer(TListe *P1, TListe *P2, TListe *R, int signe);
 
-// R鬺e 6
-void Sauvegarder(TListe *L, char *nomFichier);
+// R么le 6
+void Sauvegarder(TListe *liste, char *nomFichier);
 
-// R鬺e 7
-void Charger(TListe *L, char *nomFichier);
+// R么le 7
+void Charger(TListe *liste, char *nomFichier);
 
-// R鬺e 8
+// R么le 8
 void SaisirPolynome1(TListe *P1);
 void SaisirPolynome2(TListe *P2);
 void AfficherMenuPrincipal();
