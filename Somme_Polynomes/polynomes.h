@@ -10,14 +10,14 @@ typedef struct TMonome TMonome{
     int expo;
 };
 
-typedef struct TElement TElement{
-    TData data;
-    struct Element *suivant;
+typedef struct TPolynome Tpolynome{
+    Tpolynome monome;
+    struct Tpolynome *suivant;
 };
 
 typedef struct TListe TListe {
-    TElement *debut;
-    TElement *fin;
+    Tpolynome *debut;
+    Tpolynome *fin;
     int taille;
 };
 
