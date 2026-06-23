@@ -4,7 +4,7 @@
 /* =========================
    MONOME
 ========================= */
-typedef struct {
+typedef struct TMonome {
     int coeff;
     int expo;
 } TMonome;
@@ -20,7 +20,7 @@ typedef struct TElement {
 /* =========================
    LISTE POLYNOME
 ========================= */
-typedef struct {
+typedef struct TListe {
     TElement *debut;
     TElement *fin;
     int taille;
