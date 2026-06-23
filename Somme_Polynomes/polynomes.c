@@ -5,7 +5,7 @@
 /* ========================================================
    mon RÔLE : INITIALISATION DE LA LISTE
 ======================================================== */
-void InitialiserListe(TListe *L) {
+void InitialiserListe(TListe *liste) {
     L->debut = NULL;
     L->fin = NULL;
     L->taille = 0;
