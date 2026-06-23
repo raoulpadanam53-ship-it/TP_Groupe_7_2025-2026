@@ -2,108 +2,84 @@
 #include <stdlib.h>
 #include "polynomes.h"
 
-/* ========================================================
-   👥 RÔLE 8 : MENU PRINCIPAL ET SAISIE DE P1
-======================================================== */
-void AfficherMenuPrincipal() {
-    printf("\n===== MENU =====\n");
-    printf("1. Saisie\n");
-    printf("2. Charger\n");
-    printf("3. Sauvegarder\n");
-    printf("4. P1 + P2\n");
-    printf("5. P1 - P2\n");
-    printf("6. Afficher P1 et P2\n");
-    printf("0. Quitter\n");
-    printf("Choix : ");
-}
-
-void SaisirPolynome1(TListe *P1) {
-    int n, coeff, expo, i;
-    printf("Combien de monômes contient votre polynôme P1 : ");
-    scanf("%d", &n);
-
-    for (i = 0; i < n; i++) {
-        printf("  Entrez le coefficient du monôme %d : ", i + 1);
-        scanf("%d", &coeff);
-        printf("  Entrez l'exposant du monôme %d : ", i + 1);
-        scanf("%d", &expo);
-        AjouterElement(P1, coeff, expo);
-    }
-}
-
-/* ========================================================
-   👥 RÔLE 9 : SAISIE DE P2
-======================================================== */
-void SaisirPolynome2(TListe *P2) {
-    int n, coeff, expo, i;
-    printf("Combien de monômes contient votre polynôme P2 : ");
-    scanf("%d", &n);
-
-    for (i = 0; i < n; i++) {
-        printf("  Entrez le coefficient du monôme %d : ", i + 1);
-        scanf("%d", &coeff);
-        printf("  Entrez l'exposant du monôme %d : ", i + 1);
-        scanf("%d", &expo);
-        AjouterElement(P2, coeff, expo);
-    }
-}
-
-/* ========================================================
-   ⚙️ EXÉCUTION DU PROGRAMME PRINCIPAL (Géré par le Rôle 9)
-======================================================== */
 int main() {
-    TListe P1, P2, R;
+
+    /* =========================
+       VARIABLES PRINCIPALES
+    ========================= */
+    TListe polynome1, polynome2, resultat;
     int choix, continuer = 1;
 
-    // Appel du rôle de Raoul pour l'initialisation
-    InitialiserListe(&P1);
-    InitialiserListe(&P2);
-    InitialiserListe(&R);
+    /* Initialisation des listes */
+    InitialiserListe(&polynome1);
+    InitialiserListe(&polynome2);
+    InitialiserListe(&resultat);
 
+    /* =========================
+       BOUCLE PRINCIPALE
+    ========================= */
     while (continuer) {
-        AfficherMenuPrincipal(); // Géré par Rôle 8
+
+        AfficherMenuPrincipal();
         scanf("%d", &choix);
 
+        /* ---- SAISIE ---- */
         if (choix == 1) {
-            LibererListe(&P1); // Appels Rôle 3
-            LibererListe(&P2);
-            SaisirPolynome1(&P1); // Appels Rôle 8
-            SaisirPolynome2(&P2); // Appels Rôle 9
+            LibererListe(&polynome1);
+            LibererListe(&polynome2);
+
+            SaisirPolynome1(&polynome1);
+            SaisirPolynome2(&polynome2);
         }
+
+        /* ---- CHARGEMENT ---- */
         else if (choix == 2) {
-            Charger(&P1, "P1.bin"); // Appels Rôle 5
-            Charger(&P2, "P2.bin");
+            Charger(&polynome1, "P1.bin");
+            Charger(&polynome2, "P2.bin");
         }
+
+        /* ---- SAUVEGARDE ---- */
         else if (choix == 3) {
-            Sauvegarder(&P1, "P1.bin"); // Appels Rôle 4
-            Sauvegarder(&P2, "P2.bin");
+            Sauvegarder(&polynome1, "P1.bin");
+            Sauvegarder(&polynome2, "P2.bin");
         }
+
+        /* ---- SOMME ---- */
         else if (choix == 4) {
-            Calculer(&P1, &P2, &R, 1); // Appels Rôle 6
-            Afficher(&R, "SOMME");      // Appels Rôle 7
+            Calculer(&polynome1, &polynome2, &resultat, 1);
+            Afficher(&resultat, "SOMME");
         }
+
+        /* ---- DIFFERENCE ---- */
         else if (choix == 5) {
-            Calculer(&P1, &P2, &R, -1);
-            Afficher(&R, "DIFFERENCE");
+            Calculer(&polynome1, &polynome2, &resultat, -1);
+            Afficher(&resultat, "DIFFERENCE");
         }
+
+        /* ---- AFFICHAGE ---- */
         else if (choix == 6) {
-            Afficher(&P1, "P1");
-            Afficher(&P2, "P2");
+            Afficher(&polynome1, "P1");
+            Afficher(&polynome2, "P2");
         }
+
+        /* ---- QUITTER ---- */
         else if (choix == 0) {
             continuer = 0;
         }
 
+        /* Continuer ou non */
         if (choix != 0) {
-            printf("\nContinuer ? (1/0) : ");
+            printf("Continuer ? (1/0) : ");
             scanf("%d", &continuer);
         }
     }
 
-    // Nettoyage final automatique
-    LibererListe(&P1);
-    LibererListe(&P2);
-    LibererListe(&R);
+    /* =========================
+       NETTOYAGE FINAL
+    ========================= */
+    LibererListe(&polynome1);
+    LibererListe(&polynome2);
+    LibererListe(&resultat);
 
     return 0;
 }
