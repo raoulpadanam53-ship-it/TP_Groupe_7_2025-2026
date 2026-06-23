@@ -21,7 +21,7 @@ void AjouterMonome(TListe *liste, int coeff, int expo) {
     if (coeff == 0) return;
 
     /* Création d’un nouvel élément */
-    TElement *nouveau = (TElement*)malloc(sizeof(TElement));
+    Tpolynome *nouveau = (Tpolynome*)malloc(sizeof(Tpolynome));
     if (!nouveau) return;
 
     nouveau->monome.coeff = coeff;
@@ -50,7 +50,7 @@ void LibererListe(TListe *liste) {
     TElement *courant = liste->debut;
 
     while (courant != NULL) {
-        TElement *temp = courant;   // sauvegarde
+        Tpolynome *temp = courant;   // sauvegarde
         courant = courant->suivant; // avance
         free(temp);                 // suppression
     }
@@ -62,7 +62,7 @@ void LibererListe(TListe *liste) {
 
 /* =========================================================
    📌 SAUVEGARDE BINAIRE
-   Écrit les monômes dans un fichier
+   Écris les monômes dans un fichier
 ========================================================= */
 void Sauvegarder(TListe *liste, const char *nomFichier) {
 
@@ -191,7 +191,7 @@ void AfficherMenuPrincipal() {
 /* =========================================================
    📌 SAISIE POLYNÔME 1
 ========================================================= */
-void SaisirPolynome1(TListe *p1) {
+void SaisirPolynome1(TListe *polynome1) {
 
     int n, coeff, expo;
 
@@ -206,14 +206,14 @@ void SaisirPolynome1(TListe *p1) {
         printf("Expo : ");
         scanf("%d", &expo);
 
-        AjouterMonome(p1, coeff, expo);
+        AjouterMonome(polynome1, coeff, expo);
     }
 }
 
 /* =========================================================
    📌 SAISIE POLYNÔME 2
 ========================================================= */
-void SaisirPolynome2(TListe *p2) {
+void SaisirPolynome2(TListe *polynôme) {
 
     int n, coeff, expo;
 
@@ -228,6 +228,6 @@ void SaisirPolynome2(TListe *p2) {
         printf("Expo : ");
         scanf("%d", &expo);
 
-        AjouterMonome(p2, coeff, expo);
+        AjouterMonome(polynome2, coeff, expo);
     }
 }
