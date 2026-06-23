@@ -14,7 +14,7 @@ void InitialiserListe(TListe *L) {
 /* ========================================================
    👥 RÔLE 2 : AJOUT D'UN ÉLÉMENT EN FIN DE LISTE
 ======================================================== */
-void AjouterElement(TListe *L, int coeff, int expo) {
+void AjouterElement(TListe *liste, int coeff, int expo) {
     TElement *nouveau = NULL;
 
     if (coeff != 0) {
@@ -24,14 +24,14 @@ void AjouterElement(TListe *L, int coeff, int expo) {
             nouveau->data.expo = expo;
             nouveau->suivant = NULL;
 
-            if (L->debut == NULL) {
-                L->debut = nouveau;
-                L->fin = nouveau;
+            if (liste->debut == NULL) {
+                liste->debut = nouveau;
+                liste->fin = nouveau;
             } else {
-                L->fin->suivant = nouveau;
-                L->fin = nouveau;
+                liste->fin->suivant = nouveau;
+                liste->fin = nouveau;
             }
-            L->taille++;
+            liste->taille++;
         }
     }
 }
