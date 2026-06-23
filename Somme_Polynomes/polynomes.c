@@ -67,7 +67,7 @@ void Sauvegarder(TListe *liste, const char *nomFichier){
     if (f == NULL)
         return;
 
-    for (TElement *courant = L->debut; courant != NULL; courant = courant->suivant)
+    for (TElement *courant = liste->debut; courant != NULL; courant = courant->suivant)
     {
         if (fwrite(&courant->data, sizeof(TData), 1, f) != 1)
         {
