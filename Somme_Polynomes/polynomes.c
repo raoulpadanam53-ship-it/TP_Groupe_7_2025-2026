@@ -59,11 +59,13 @@ void LibererListe(TListe *L) {
 ======================================================== */
 void Sauvegarder(TListe *L, const char *nomFichier)
 {
-    if (!L || !nomFichier || !*nomFichier)
+    FILE *f = NULL;
+
+    if (L == NULL || nomFichier == NULL || nomFichier[0] == '\0')
         return;
 
-    FILE *f = fopen(nomFichier, "wb");
-    if (!f)
+    f = fopen(nomFichier, "wb");
+    if (f == NULL)
         return;
 
     for (TElement *courant = L->debut; courant != NULL; courant = courant->suivant)
@@ -75,6 +77,8 @@ void Sauvegarder(TListe *L, const char *nomFichier)
         }
     }
 
+    fclose(f);        
+}
 /* ========================================================
    👥 RÔLE 5 : CHARGEMENT BINAIRE
 ======================================================== */
