@@ -1,56 +1,62 @@
 #ifndef POLYNOMES_H
 #define POLYNOMES_H
 
-/* ========================================================
-   STRUCTURES DE DONNÉES DU PROJET
-======================================================== */
+/* =========================================================
+   📌 STRUCTURE : MONOME
+   Représente un terme du polynôme : ax^b
+========================================================= */
+typedef struct {
+    int coeff;   // coefficient (a)
+    int expo;    // exposant (b)
+} TMonome;
 
-typedef struct TMonome{
-    int coeff;
-    int expo;
-}Tmonome;
+/* =========================================================
+   📌 STRUCTURE : ELEMENT DE LISTE CHAÎNÉE
+   Chaque élément contient un monôme + pointeur suivant
+========================================================= */
+typedef struct TElement {
+    TMonome monome;          // donnée (monôme)
+    struct TElement *suivant; // lien vers le prochain élément
+} TElement;
 
-typedef struct TPolynome{
-    Tpolynome monome;
-    struct Tpolynome *suivant;
-} Tpolynome;
+/* =========================================================
+   📌 STRUCTURE : LISTE DE POLYNÔMES
+   Représente un polynôme sous forme de liste chaînée
+========================================================= */
+typedef struct {
+    TElement *debut;  // premier élément
+    TElement *fin;    // dernier élément
+    int taille;       // nombre de monômes
+} TListe;
 
-typedef struct TListe{
-    Tpolynome *debut;
-    Tpolynome *fin;
-    int taille;
-}Tliste;
+/* =========================================================
+   📌 PROTOTYPES DES FONCTIONS
+========================================================= */
 
-/* ========================================================
-   REPARTITION DES 9 ROLES DU GROUPE
-======================================================== */
-
-// 👑 TON RÔLE : Gestion structurelle de base
+/* Initialisation de la liste */
 void InitialiserListe(TListe *liste);
 
-// 👥 RÔLE 2 : Insertion d'un monôme
-void AjouterElement(TListe *liste, int coeff, int expo);
+/* Ajout d’un monôme */
+void AjouterMonome(TListe *liste, int coeff, int expo);
 
-// 👥 RÔLE 3 : Nettoyage de la mémoire
+/* Libération mémoire */
 void LibererListe(TListe *liste);
 
-// 👥 RÔLE 4 : Sauvegarde dans un fichier binaire
+/* Sauvegarde dans un fichier binaire */
 void Sauvegarder(TListe *liste, const char *nomFichier);
 
-// 👥 RÔLE 5 : Chargement depuis un fichier binaire
-void Charger(TListe *liste, char *nomFichier);
+/* Chargement depuis un fichier binaire */
+void Charger(TListe *liste, const char *nomFichier);
 
-// 👥 RÔLE 6 : Algorithme de calcul (Somme / Soustraction)
-void Calculer(TListe *polynome1, TListe *polynome2, TListe *R, int signe);
+/* Calcul somme ou différence */
+void Calculer(TListe *p1, TListe *p2, TListe *resultat, int signe);
 
-// 👥 RÔLE 7 : Affichage console mis en forme
-void Afficher(TListe *liste, char *nom);
+/* Affichage d’un polynôme */
+void Afficher(TListe *liste, const char *nom);
 
-// 👥 RÔLE 8 : Interface utilisateur et saisie de P1
+/* Interface utilisateur */
 void AfficherMenuPrincipal();
-void SaisirPolynome1(TListe *polynome1);
+void SaisirPolynome1(TListe *p1);
+void SaisirPolynome2(TListe *p2);
 
-// 👥 RÔLE 9 : Saisie de P2 et Gestion de la boucle principale
-void SaisirPolynome2(TListe *polynome2);
-
-#endif // POLYNOMES_H
+#endif
