@@ -2,38 +2,88 @@
 #include <stdlib.h>
 #include "polynomes.h"
 
+int main() {
+    TListe P1, P2, R;
+    int choix, continuer = 1;
+    int n, coeff, expo, i;
 
-void InitialiserListe(TListe *L) {
-    L->debut = NULL;
-    L->fin = NULL;
-    L->taille = 0;
-}
+    InitialiserListe(&P1);
+    InitialiserListe(&P2);
+    InitialiserListe(&R);
 
+    while (continuer) {
+        printf("\n===== MENU =====\n");
+        printf("1. Saisie\n");
+        printf("2. Charger\n");
+        printf("3. Sauvegarder\n");
+        printf("4. P1 + P2\n");
+        printf("5. P1 - P2\n");
+        printf("6. Afficher P1 et P2\n");
+        printf("0. Quitter\n");
+        printf("Choix : ");
+        scanf("%d", &choix);
 
-void LibererListe(TListe *L) {
-    TElement *courant = L->debut;
-    TElement *tmp = NULL;
+        if (choix == 1) {
+            LibererListe(&P1);
+            LibererListe(&P2);
 
-    while (courant != NULL) {
-        tmp = courant;
-        courant = courant->suivant;
-        free(tmp); // On libère le monôme actuel
+            printf("Combien de monômes contient votre polynôme P1 : ");
+            scanf("%d", &n);
+
+            for (i = 0; i < n; i++) {
+                printf("  Entrez le coefficient du monôme %d : ", i + 1);
+                scanf("%d", &coeff);
+                printf("  Entrez l'exposant du monôme %d : ", i + 1);
+                scanf("%d", &expo);
+                AjouterElement(&P1, coeff, expo);
+            }
+
+            printf("Combien de monômes contient votre polynôme P2 : ");
+            scanf("%d", &n);
+
+            for (i = 0; i < n; i++) {
+                printf("  Entrez le coefficient du monôme %d : ", i + 1);
+                scanf("%d", &coeff);
+                printf("  Entrez l'exposant du monôme %d : ", i + 1);
+                scanf("%d", &expo);
+                AjouterElement(&P2, coeff, expo);
+            }
+        }
+        else if (choix == 2) {
+            Charger(&P1, "P1.bin");
+            Charger(&P2, "P2.bin");
+        }
+        else if (choix == 3) {
+            Sauvegarder(&P1, "P1.bin");
+            Sauvegarder(&P2, "P2.bin");
+        }
+        else if (choix == 4) {
+            Calculer(&P1, &P2, &R, 1);
+            Afficher(&R, "SOMME");
+        }
+        else if (choix == 5) {
+            Calculer(&P1, &P2, &R, -1);
+            Afficher(&R, "DIFFERENCE");
+        }
+        else if (choix == 6) {
+            Afficher(&P1, "P1");
+            Afficher(&P2, "P2");
+        }
+        else if (choix == 0) {
+            continuer = 0;
+        }
+
+        if (choix != 0) {
+            printf("\nContinuer ? (1/0) : ");
+            scanf("%d", &continuer);
+        }
     }
 
-    // Remise à zéro des pointeurs et de la taille
-    L->debut = NULL;
-    L->fin = NULL;
-    L->taille = 0;
-}
+    LibererListe(&P1);
+    LibererListe(&P2);
+    LibererListe(&R);
 
-// ---  Rôle 2 ---
-void AjouterElement(TListe *L, int coeff, int expo) {
-    // À REMPLIR PAR LE RÔLE 2
-}
-
-// ---  Rôle 3 ---
-void Afficher(TListe *L, char *nom) {
-    // À REMPLIR PAR LE RÔLE 3
+    return 0;
 }
 
 // --- Coded by Rôle 4 ---

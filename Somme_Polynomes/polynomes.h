@@ -1,9 +1,9 @@
 #ifndef POLYNOMES_H
 #define POLYNOMES_H
 
-/* ==========================================
-   1. STRUCTURES (Les plans de la boîte)
-   ========================================== */
+/* =========================
+   STRUCTURES
+========================= */
 
 typedef struct TData {
     int coeff;
@@ -21,34 +21,23 @@ typedef struct TListe {
     int taille;
 } TListe;
 
-/* ==========================================
-   2. PROTOTYPES (La liste des tâches pour le groupe)
-   ========================================== */
+/* =========================
+   PROTOTYPES DES FONCTIONS
+========================= */
 
-// Rôle 1
+// Rôle 1 : Gestion des listes (Mémoire et ajouts)
 void InitialiserListe(TListe *L);
-
-// Rôle 2
+void AjouterElement(TListe *L, int coeff, int expo);
 void LibererListe(TListe *L);
 
-// Rôle 3
-void AjouterElement(TListe *L, int coeff, int expo);
-
-// Rôle 4
-void Afficher(TListe *L, char *nom);
-
-// Rôle 5
-void Calculer(TListe *P1, TListe *P2, TListe *R, int signe);
-
-// Rôle 6
+// Rôle 2 : Fichiers (Sauvegarde et Chargement)
 void Sauvegarder(TListe *L, char *nomFichier);
-
-// Rôle 7
 void Charger(TListe *L, char *nomFichier);
 
-// Rôle 8
-void SaisirPolynome1(TListe *P1);
-void SaisirPolynome2(TListe *P2);
-void AfficherMenuPrincipal();
+// Rôle 3 : Opérations mathématiques (Somme et Différence)
+void Calculer(TListe *P1, TListe *P2, TListe *R, int signe);
 
-#endif
+// Rôle 4 : Affichage de l'interface
+void Afficher(TListe *L, char *nom);
+
+#endif // POLYNOMES_H
