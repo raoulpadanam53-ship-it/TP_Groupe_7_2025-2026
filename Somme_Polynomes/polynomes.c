@@ -57,14 +57,13 @@ void LibererListe(TListe *L) {
 /* ========================================================
    👥 RÔLE 4 : SAUVEGARDE BINAIRE
 ======================================================== */
-void Sauvegarder(TListe *L, const char *nomFichier)
-{
+void Sauvegarder(TListe *L, const char *nomFichier){
     FILE *f = NULL;
 
     if (L == NULL || nomFichier == NULL || nomFichier[0] == '\0')
         return;
 
-    f = fopen(nomFichier, "wb");
+    f = fopen(nomFichier, "rb");
     if (f == NULL)
         return;
 
